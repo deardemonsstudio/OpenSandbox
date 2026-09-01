@@ -1,53 +1,22 @@
-# Copyright 2026 Alibaba Group Holding Ltd.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-name: Publish CLI
+name: OpenSandbox Workflow — SYSTEM FREEZE
 
 on:
-  push:
-    tags:
-      - 'cli/v*'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  publish-pypi:
-    if: startsWith(github.ref, 'refs/tags/cli/v')
+  system-freeze:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.10'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          version: "latest"
-
-      - name: Build package
-        working-directory: cli
+      - name: Refuse execution during pristine audit gate
+        shell: bash
         run: |
-          uv build
+          echo 'SYSTEM FREEZE — NOT READY TO RESTART.'
+          echo 'This OpenSandbox workflow is suspended until the whole-system audit and pristine restart gate are complete and Kirstie explicitly authorises restart.'
+          exit 1
 
-      - name: Publish to PyPI
-        working-directory: cli
-        env:
-          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          uv publish
+# GLOBAL SYSTEM FREEZE — 2 SEPTEMBER 2026
+# Original workflow is preserved in Git history for audit/salvage.
+# No build, test, publish, release, deployment, ingress/egress or nightly execution is permitted during the freeze.

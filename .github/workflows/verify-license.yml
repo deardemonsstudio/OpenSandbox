@@ -1,23 +1,22 @@
-name: Verify License Headers
+name: OpenSandbox Workflow — SYSTEM FREEZE
 
 on:
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: read
 
 jobs:
-  verify-license:
-    runs-on: self-hosted
+  system-freeze:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Run license verification
+      - name: Refuse execution during pristine audit gate
+        shell: bash
         run: |
-          chmod +x scripts/verify-license.sh
-          ./scripts/verify-license.sh
+          echo 'SYSTEM FREEZE — NOT READY TO RESTART.'
+          echo 'This OpenSandbox workflow is suspended until the whole-system audit and pristine restart gate are complete and Kirstie explicitly authorises restart.'
+          exit 1
+
+# GLOBAL SYSTEM FREEZE — 2 SEPTEMBER 2026
+# Original workflow is preserved in Git history for audit/salvage.
+# No build, test, publish, release, deployment, ingress/egress or nightly execution is permitted during the freeze.

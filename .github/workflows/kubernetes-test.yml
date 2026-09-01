@@ -1,66 +1,22 @@
-name: Sandbox Kubernetes Tests
+name: OpenSandbox Workflow — SYSTEM FREEZE
 
 on:
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'kubernetes/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
-env:
-  GO_VERSION: '1.24'
-
 jobs:
-  controller-e2e:
-    name: Controller E2E Tests (Kubernetes v${{ matrix.version }})
-    strategy:
-      fail-fast: false
-      matrix:
-        version: ["1.21.1", "1.22.4", "1.24.4", "1.26.4", "1.28.6", "1.30.4", "1.32.2", "1.34.2"]
+  system-freeze:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-
-      - name: Run tests
-        working-directory: kubernetes
+      - name: Refuse execution during pristine audit gate
+        shell: bash
         run: |
-          make test-e2e KIND_K8S_VERSION=v${{ matrix.version }}
+          echo 'SYSTEM FREEZE — NOT READY TO RESTART.'
+          echo 'This OpenSandbox workflow is suspended until the whole-system audit and pristine restart gate are complete and Kirstie explicitly authorises restart.'
+          exit 1
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '1.24.0'
-
-      - name: Run golint
-        working-directory: kubernetes
-        run: |
-          make lint
-
-      - name: Build binary
-        working-directory: kubernetes
-        run: |
-          make build
-          make task-executor-build
-
-      - name: Run tests
-        working-directory: kubernetes
-        run: |
-          make test
+# GLOBAL SYSTEM FREEZE — 2 SEPTEMBER 2026
+# Original workflow is preserved in Git history for audit/salvage.
+# No build, test, publish, release, deployment, ingress/egress or nightly execution is permitted during the freeze.
